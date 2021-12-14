@@ -1,6 +1,6 @@
 import helpers
 
-lines = helpers.read_input(1)
+lines = helpers.read_input(1, 2)
 
 values = [int(line) for line in lines]
 
