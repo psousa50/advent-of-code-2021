@@ -3,4 +3,4 @@ def read_input(day, part, sample=False):
     filepath = f'day{day:02d}/inputs/{filename}_{part:02d}.txt'
     with open(filepath, 'r', encoding='utf8') as f:
         lines = f.readlines()
-    return lines
+    return [line.strip() for line in lines]
