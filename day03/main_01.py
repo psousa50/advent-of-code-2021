@@ -1,19 +1,11 @@
 import helpers
+from day03_helpers import most_common_bit
 
-lines = helpers.read_input(3, 1)
+bytes = helpers.read_input(3, 1)
 
-values = [line for line in lines]
+binary_length = len(bytes[0])
 
-binary_length = len(values[0])
-number_of_binaries = len(values)
-
-ones_counter = [0] * binary_length
-
-for binary in values:
-  for bit_index, bit in enumerate(binary):
-    if int(bit) == 1: ones_counter[bit_index] += 1
-
-most_common = [1 if c > number_of_binaries - c else 0 for c in ones_counter]
+most_common = [most_common_bit(bytes, bit_index) for bit_index in range(binary_length)]
 
 most_common_binary = "".join([str(s) for s in most_common])
 
@@ -26,3 +18,4 @@ inverted_most_common_binary = "".join([str(s) for s in inverted_most_common])
 epsilon_rate = int(inverted_most_common_binary, 2)
 
 print(game_rate * epsilon_rate)
+
