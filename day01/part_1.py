@@ -1,7 +1,7 @@
-import helpers
+import global_helpers
 
 def main():
-  lines = helpers.read_input(1, 1)
+  lines = global_helpers.read_input(1, 1)
 
   values = [int(line) for line in lines]
 

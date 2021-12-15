@@ -1,8 +1,8 @@
-import helpers
+from global_helpers import read_input
 from day03.helpers import most_common_bit
 
 def main():
-  lines = helpers.read_input(3, 1)
+  lines = read_input(3, 1)
 
   oxygen_bytes = list(lines)
 
