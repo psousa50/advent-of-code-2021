@@ -1,5 +1,5 @@
 from typing import Dict, List
-from day05.models import Point, Segment
+from src.day05.models import Point, Segment
 
 def read_coord(c: str):
   points = c.split(",")

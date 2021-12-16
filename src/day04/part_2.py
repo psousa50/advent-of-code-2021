@@ -1,5 +1,5 @@
 import global_helpers
-from day04.helpers import Board, read_board, read_boards
+from src.day04.helpers import read_boards
 
 def main():
   lines = global_helpers.read_input(4, 1)

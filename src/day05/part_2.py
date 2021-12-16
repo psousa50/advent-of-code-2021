@@ -1,5 +1,5 @@
 from typing import Dict, List
-from day05.helpers import count_points_usage, read_segments
+from src.day05.helpers import count_points_usage, read_segments
 import global_helpers
 
 def main():

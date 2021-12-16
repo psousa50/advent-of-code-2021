@@ -1,5 +1,5 @@
 from global_helpers import read_input
-from day03.helpers import most_common_bit
+from src.day03.helpers import most_common_bit
 
 def main():
   lines = read_input(3, 1)

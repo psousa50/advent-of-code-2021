@@ -1,5 +1,5 @@
 import global_helpers
-from day03.helpers import most_common_bit
+from src.day03.helpers import most_common_bit
 
 def most_common_bit(bytes, bit):
   ones_count = 0

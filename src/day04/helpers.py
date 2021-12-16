@@ -1,6 +1,6 @@
 from typing import List, Dict
 from typing import List, Dict
-from day04.models import Board
+from src.day04.models import Board
 
 def read_board(lines, line_index):
   if line_index >= len(lines): return None
