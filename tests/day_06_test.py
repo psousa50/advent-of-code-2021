@@ -6,5 +6,3 @@ def test_part_1():
 
 def test_part_2():
   assert src.day06.part_2.main() == 1589590444365
-
-  
