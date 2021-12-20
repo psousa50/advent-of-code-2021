@@ -1,25 +1,12 @@
-from dataclasses import dataclass, field
 from typing import List
 import global_helpers
-
-
-@dataclass
-class Entry:
-  signal_patterns: List[int]
-  output_values: List[int]
-
-  def __repr__(self):
-    return f'{self.signal_patterns} | {self.output_values}'
+from src.day08.helpers import read_entries
 
 def main():
   lines = global_helpers.read_input(8, 1)
 
-  entries: List[Entry] = []
+  entries = read_entries(lines)
 
-  for line in lines:
-    [signal_patterns_part, output_values_part] = line.split("|")
-    entries.append(Entry(signal_patterns_part.split(), output_values_part.split()))
-  
   output_values: List[int] = []
   for entry in entries:
     output_values += entry.output_values
