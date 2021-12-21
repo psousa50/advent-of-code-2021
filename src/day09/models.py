@@ -5,10 +5,13 @@ from src.global_models import Point
 
 @dataclass
 class Surface:
-  rows: List[Point]
+  rows: List[List[int]]
 
   def __getitem__(self, coords: Point):
     return self.rows[coords.y][coords.x]
+
+  def __setitem__(self, coords: Point, value):
+    self.rows[coords.y][coords.x] = value
 
   def maxX(self):
     return len(self.rows[0])

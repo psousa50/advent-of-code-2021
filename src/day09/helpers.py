@@ -10,7 +10,6 @@ def read_surface(lines: List[str]):
 def find_low_points_coords(surface: Surface):
   low_points_coords: List[Point] = []
   for coords in surface.points_coords():
-    value = surface[coords]
-    if all([value < surface[n] for n in surface.neighbours(coords)]): low_points_coords.append(coords)
+    if all([surface[coords] < surface[neighbour_coords] for neighbour_coords in surface.neighbours(coords)]): low_points_coords.append(coords)
 
   return low_points_coords
