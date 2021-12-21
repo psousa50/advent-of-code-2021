@@ -15,6 +15,12 @@ class Surface:
 
   rows: List[List[int]]
 
+  def row_repr(self, row: List[int]):
+    return [f'{c:2d}' for c in row]
+
+  def __repr__(self):
+    return "\n".join([f'{self.row_repr(r)}' for r in self.rows])
+
   def __getitem__(self, coords: Point):
     return self.rows[coords.y][coords.x]
 
@@ -37,6 +43,9 @@ class Surface:
 
   def square_neighbours(self, p: Point):
     return self.neighbours(p, Surface.square_neighbours_coords)
+
+  def diagonal_neighbours(self, p: Point):
+    return self.neighbours(p, Surface.diagonal_neighbours_coords)
 
   def neighbours(self, p: Point, neighbours_coords):
     n = []
