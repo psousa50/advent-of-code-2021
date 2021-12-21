@@ -1,7 +1,7 @@
 from typing import List
 
-from src.day09.helpers import find_low_points_coords, read_surface
-from src.global_helpers import read_input
+from src.day09.helpers import find_low_points_coords
+from src.global_helpers import read_input, read_surface
 
 
 def main():

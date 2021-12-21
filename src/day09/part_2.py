@@ -1,10 +1,9 @@
 from functools import reduce
 from typing import List
 
-from src.day09.helpers import find_low_points_coords, read_surface
-from src.day09.models import Surface
-from src.global_helpers import read_input
-from src.global_models import Point
+from src.day09.helpers import find_low_points_coords
+from src.global_helpers import read_input, read_surface
+from src.global_models import Point, Surface
 
 
 def calc_basin_area(visited_surface: Surface, surface: Surface, coords: Point):
@@ -12,7 +11,7 @@ def calc_basin_area(visited_surface: Surface, surface: Surface, coords: Point):
   if surface[coords] != 9 and visited_surface[coords] == 0:
     basin_area += 1
     visited_surface[coords] = 1
-    for neighbour_coords in surface.neighbours(coords):
+    for neighbour_coords in surface.square_neighbours(coords):
       basin_area += calc_basin_area(visited_surface, surface, neighbour_coords)
 
   return basin_area
