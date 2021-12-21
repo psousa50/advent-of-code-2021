@@ -1,9 +1,9 @@
 from typing import List
-import global_helpers
+from src.global_helpers import read_input
 from src.day08.helpers import read_entries
 
 def main():
-  lines = global_helpers.read_input(8, 1)
+  lines = read_input(8, 1)
 
   entries = read_entries(lines)
 

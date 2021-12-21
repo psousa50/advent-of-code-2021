@@ -1,7 +1,7 @@
-import global_helpers
+from src.global_helpers import read_input
 
 def main():
-  lines = global_helpers.read_input(0, 1, True)
+  lines = read_input(0, 1, True)
 
   return 0
 

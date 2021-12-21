@@ -1,7 +1,7 @@
-import global_helpers
+from src.global_helpers import read_input
 
 def main():
-  lines = global_helpers.read_input(2, 1)
+  lines = read_input(2, 1)
 
   commands = tuple((v[0], int(v[1])) for v in (v.split() for v in lines))
 

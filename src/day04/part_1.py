@@ -1,9 +1,9 @@
-import global_helpers
+from src.global_helpers import read_input
 from typing import List, Dict
 from src.day04.helpers import read_boards
 
 def main():
-  lines = global_helpers.read_input(4, 1)
+  lines = read_input(4, 1)
 
   rolled_numbers, boards = read_boards(lines)
 

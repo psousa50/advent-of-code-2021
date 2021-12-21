@@ -1,4 +1,4 @@
-from global_helpers import read_input
+from src.global_helpers import read_input
 from src.day03.helpers import most_common_bit
 
 def main():

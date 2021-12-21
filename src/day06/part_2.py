@@ -1,8 +1,8 @@
 from src.day06.helpers import generations
-import global_helpers
+from src.global_helpers import read_input
 
 def main():
-  lines = global_helpers.read_input(6, 1)
+  lines = read_input(6, 1)
 
   lantern_fish_timers = [int(n) for n in lines[0].split(",")]
 

@@ -1,14 +1,8 @@
 from dataclasses import dataclass
 from typing import NamedTuple
-from global_helpers import sign
 
-class Point(NamedTuple):
-  x: int
-  y: int
-
-  def __repr__(self):
-    return f'({self.x},{self.y})'
-
+from src.global_helpers import sign
+from src.global_models import Point
 @dataclass
 class Segment:
     start: Point

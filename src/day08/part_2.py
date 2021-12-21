@@ -2,7 +2,7 @@
 import itertools
 from typing import List
 
-import global_helpers
+from src.global_helpers import read_input
 from src.day08.helpers import read_entries
 from src.day08.models import Entry
 
@@ -13,7 +13,7 @@ def contains(p1, p2):
   return all(c in [c for c in p1] for c in p2)
 
 def main():
-  lines = global_helpers.read_input(8, 1)
+  lines = read_input(8, 1)
 
   entries = read_entries(lines)
 

@@ -1,4 +1,4 @@
-import global_helpers
+from src.global_helpers import read_input
 from src.day03.helpers import most_common_bit
 
 def most_common_bit(bytes, bit):
@@ -8,7 +8,7 @@ def most_common_bit(bytes, bit):
   return 1 if ones_count >= len(bytes) - ones_count else 0
 
 def main():
-  bytes = global_helpers.read_input(3, 1)
+  bytes = read_input(3, 1)
 
   binary_length = len(bytes[0])
 

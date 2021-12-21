@@ -1,9 +1,8 @@
-from typing import Dict, List
 from src.day05.helpers import count_points_usage, read_segments
-import global_helpers
+from src.global_helpers import read_input
 
 def main():
-  lines = global_helpers.read_input(5, 1)
+  lines = read_input(5, 1)
 
   segments = read_segments(lines)
 
