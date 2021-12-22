@@ -23,3 +23,18 @@ def read_dots_and_folds(lines):
       folds.append((r.group(1), int(r.group(2))))
 
   return dots, folds
+
+def fold_dots(dots: List[Point], fold):
+  coord, line = fold
+  new_dots = set(dots)
+  for d in dots:
+    if coord == 'x' and d.x > line: 
+      new_dots.add(Point(2 * line - d.x, d.y))
+      new_dots.remove(d)
+
+    if coord == 'y' and d.y > line: 
+      new_dots.add(Point(d.x, 2 * line - d.y))
+      new_dots.remove(d)
+
+
+  return new_dots
