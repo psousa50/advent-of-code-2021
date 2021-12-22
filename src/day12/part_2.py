@@ -7,7 +7,7 @@ def main():
 
   paths = [tuple(line.split("-")) for line in lines]
 
-  solutions = find_solutions(paths, Node('start'))
+  solutions = find_solutions(paths, Node('start', None, 1))
 
   return len(solutions)
 
