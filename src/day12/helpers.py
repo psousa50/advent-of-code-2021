@@ -1,23 +1,28 @@
-from typing import List
+from collections import defaultdict, deque
 
-from src.day12.models import Node
+def read_paths(lines):
+  paths = defaultdict(list)
+  for line in lines:
+    p = line.split("-")
+    if (p[1]) != 'start': paths[p[0]].append(p[1])
+    if (p[0]) != 'start': paths[p[1]].append(p[0])
 
+  return paths
 
-def find_solutions(paths, node: Node):
-  if node.cave == 'end': return [node]
-
-  caves: List[str] = [e for s, e in paths if s == node.cave] + [s for s, e in paths if e == node.cave and s != 'start']
-  children: List[Node] = []
-  for c in caves:
-    revisiting_small_cave = c.islower() and c in node.path
-    if not revisiting_small_cave or revisiting_small_cave and node.visits_for_small_cave < node.max_visits_for_small_cave:
-      children_node = Node(c, node) 
-      if revisiting_small_cave: children_node.visits_for_small_cave += 1
-      children.append(children_node)
-
+def find_solutions(paths, max_small_visits):
+  start = ('start', ['start'], 0)
+  nodes = deque([start])
   solutions = []
-  for c in children:
-    solutions += find_solutions(paths, c)
-  
-  return solutions
+  while nodes:
+    pos, path, small_visits = nodes.popleft()
+    if pos == 'end':
+      solutions.append(path)
+    else:
+      for dest in paths[pos]:
+        if dest.isupper() or dest not in path:
+          nodes.append((dest, path + [dest], small_visits))
+        else:
+          if (small_visits < max_small_visits):
+            nodes.append((dest, path + [dest], small_visits + 1))
 
+  return solutions    
