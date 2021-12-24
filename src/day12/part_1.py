@@ -1,5 +1,3 @@
-from collections import defaultdict, deque
-
 from src.global_helpers import read_input
 from src.day12.helpers import read_paths, find_solutions
 
