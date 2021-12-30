@@ -1,10 +1,8 @@
 import math
 from typing import List
 
-from src.day18.models import Pair
+from src.day18.models import Pair, is_pair
 
-def is_pair(element):
-  return isinstance(element, Pair)
 
 def parse_literal_at_pos(line: List[str], pos):
   n = ""
@@ -25,11 +23,11 @@ def parse_pair_at_pos(line, pos):
   return Pair(left, right), pos + 1
 
 def parse_pair(line):
-  pair, pos =  parse_pair_at_pos(line, 0)
+  pair, _ =  parse_pair_at_pos(line, 0)
   return pair
 
 def add_to_left(pair: Pair, to_add: int):
-  if is_pair(pair):    
+  if is_pair(pair):
     return Pair(add_to_left(pair.left, to_add), pair.right)
   else:
     return pair + to_add
@@ -52,7 +50,10 @@ def split(pair: Pair):
       else:
         return pair, False
   else:
-    return (Pair(int(math.floor(pair / 2)), int(math.ceil(pair / 2))), True) if pair >= 10 else (pair, False)
+    if pair >= 10:
+      return Pair(int(math.floor(pair / 2)), int(math.ceil(pair / 2))), True
+    else:
+      return pair, False
 
 def try_explode(pair: Pair, level):
   one_found = False
@@ -61,29 +62,29 @@ def try_explode(pair: Pair, level):
       return pair, True, pair, 'nested'
     else:
 
-      left, one_found, left_pair, pair_type = try_explode(pair.left, level + 1)
+      left, one_found, exploded_pair, explode_type = try_explode(pair.left, level + 1)
       pair = Pair(left, pair.right)
-      if left_pair != None:
-        match (pair_type):
+      if exploded_pair != None:
+        match (explode_type):
           case 'nested':
-            return Pair(0, add_to_left(pair.right, left_pair.right)), True, left_pair, 'left'
+            return Pair(0, add_to_left(pair.right, exploded_pair.right)), True, exploded_pair, 'left'
           case 'left':
-            return pair, True, left_pair, 'left'
+            return pair, True, exploded_pair, 'left'
           case 'right':
-            return Pair(pair.left, add_to_left(pair.right, left_pair.right)), True, None, None
+            return Pair(pair.left, add_to_left(pair.right, exploded_pair.right)), True, None, None
 
       else:
         if not one_found:
-          right, one_found, right_pair, pair_type = try_explode(pair.right, level + 1)
+          right, one_found, exploded_pair, explode_type = try_explode(pair.right, level + 1)
           pair = Pair(pair.left, right)
-          if right_pair != None:
-            match (pair_type):
+          if exploded_pair != None:
+            match (explode_type):
               case 'nested': 
-                return Pair(add_to_right(pair.left, right_pair.left), 0), True, right_pair, 'right'
+                return Pair(add_to_right(pair.left, exploded_pair.left), 0), True, exploded_pair, 'right'
               case 'right':
-                return pair, True, right_pair, 'right'
+                return pair, True, exploded_pair, 'right'
               case 'left':
-                return Pair(add_to_right(pair.left, right_pair.left), pair.right), True, None, None
+                return Pair(add_to_right(pair.left, exploded_pair.left), pair.right), True, None, None
 
   return pair, one_found, None, None
 
