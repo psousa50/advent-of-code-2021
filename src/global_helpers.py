@@ -13,7 +13,11 @@ def read_input(day, part, sample=False):
 
 sign = lambda x: 0 if x == 0 else int(math.copysign(1, int(x)))
 
-def read_surface(lines: List[str]):
+def read_int_surface(lines: List[str]):
   rows = [[int(c) for c in line] for line in lines]
+  return Surface(rows)
+
+def read_char_surface(lines: List[str]):
+  rows = [[c for c in line] for line in lines]
   return Surface(rows)
 

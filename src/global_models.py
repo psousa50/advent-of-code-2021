@@ -13,10 +13,13 @@ class Surface:
   square_neighbours_coords = [(-1, 0), (+1, 0), (0, -1), (0, +1)]
   diagonal_neighbours_coords = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
-  rows: List[List[int]]
+  rows: List[List]
+
+  def row_repr(self, row):
+    return "".join([c for c in row])
 
   def __repr__(self):
-    return "\n".join([f'{r}' for r in self.rows])
+    return "\n".join([self.row_repr(r) for r in self.rows])
 
   def __getitem__(self, coords: Point):
     return self.rows[coords.y][coords.x]
@@ -34,6 +37,11 @@ class Surface:
     for x in range(self.maxX()):
       for y in range(self.maxY()):
         yield Point(x, y)
+
+  def points(self):
+    for x in range(self.maxX()):
+      for y in range(self.maxY()):
+        yield self[ Point(x, y)]
 
   def is_valid_coord(self, p: Point):
     return p.x >= 0 and p.x < self.maxX() and p.y >= 0 and p.y < self.maxY()

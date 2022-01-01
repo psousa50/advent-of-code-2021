@@ -2,7 +2,7 @@ from functools import reduce
 from typing import List
 
 from src.day09.helpers import find_low_points_coords
-from src.global_helpers import read_input, read_surface
+from src.global_helpers import read_input, read_int_surface
 from src.global_models import Point, Surface
 
 
@@ -19,7 +19,7 @@ def calc_basin_area(visited_surface: Surface, surface: Surface, coords: Point):
 def main():
   lines = read_input(9, 1)
 
-  surface = read_surface(lines)
+  surface = read_int_surface(lines)
 
   low_points_coords = find_low_points_coords(surface)
 

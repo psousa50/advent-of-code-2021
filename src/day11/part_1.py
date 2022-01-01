@@ -1,10 +1,10 @@
-from src.global_helpers import read_input, read_surface
+from src.global_helpers import read_input, read_int_surface
 from src.day11.helpers import increase_level
 
 def main():
   lines = read_input(11, 1)
 
-  surface = read_surface(lines)
+  surface = read_int_surface(lines)
 
   flashes = 0
   for _ in range(100):
