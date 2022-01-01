@@ -3,7 +3,6 @@ from typing import List
 
 from src.global_models import Surface
 
-
 def read_input(day, part, sample=False):
     filename = "input" if not sample else "sample"
     filepath = f'src/day{day:02d}/inputs/{filename}_{part:02d}.txt'

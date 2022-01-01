@@ -1,10 +1,8 @@
 import heapq
-import sys
 from collections import defaultdict
 
-from src.global_models import Point
+from src.global_models import Point, infinity
 
-infinity = sys.maxsize
 
 def neighbours(maxX, maxY):
 

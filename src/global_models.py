@@ -1,6 +1,8 @@
+import sys
 from dataclasses import dataclass
 from typing import List, NamedTuple
 
+infinity = sys.maxsize
 class Point(NamedTuple):
   x: int
   y: int
