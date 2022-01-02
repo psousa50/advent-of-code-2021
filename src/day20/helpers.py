@@ -13,7 +13,7 @@ def all_neighbours(image: Surface, p: Point):
 
 
 def extract_binary(row_coords, image: Surface, out_pixels_are_on: bool):
-    bytes = []
+    bytes: List[str] = []
     for c in row_coords:
         b = "0"
         if image.is_valid_coord(c):
