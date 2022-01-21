@@ -11,4 +11,5 @@ def main():
     return light_count
 
 
-print(main())
+if __name__ == "__main__":
+    print(main())

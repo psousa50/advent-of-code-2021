@@ -30,5 +30,6 @@ def main():
 
   return calc_packet_value(root_packet)
 
-print(main())
+if __name__ == "__main__":
+    print(main())
 

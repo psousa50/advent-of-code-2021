@@ -32,4 +32,5 @@ def main():
     return max(p1_wins, p2_wins)
 
 
-print(main())
+if __name__ == "__main__":
+    print(main())

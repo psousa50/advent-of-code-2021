@@ -7,12 +7,14 @@ from src.day13.helpers import fold_dots, read_dots_and_folds
 
 def main():
 
-  lines = read_input(13, 1)
+    lines = read_input(13, 1)
 
-  dots, folds = read_dots_and_folds(lines)
+    dots, folds = read_dots_and_folds(lines)
 
-  dots = fold_dots(dots, folds[0])
+    dots = fold_dots(dots, folds[0])
 
-  return len(dots)
+    return len(dots)
 
-print(main())
+
+if __name__ == "__main__":
+    print(main())

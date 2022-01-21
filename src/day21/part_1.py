@@ -35,4 +35,5 @@ def main():
     return min(p.score for p in players) * (dice.current - 1)
 
 
-print(main())
+if __name__ == "__main__":
+    print(main())

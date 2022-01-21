@@ -3,10 +3,12 @@ from src.global_helpers import read_input
 
 
 def main():
-  lines = read_input(14, 1)
+    lines = read_input(14, 1)
 
-  polymer_template, pair_insertions = read_template_and_insertions(lines)
-  
-  return calc_most_common_and_less_common(40, polymer_template, pair_insertions)
+    polymer_template, pair_insertions = read_template_and_insertions(lines)
 
-print(main())
+    return calc_most_common_and_less_common(40, polymer_template, pair_insertions)
+
+
+if __name__ == "__main__":
+    print(main())

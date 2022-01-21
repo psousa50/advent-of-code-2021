@@ -13,4 +13,5 @@ def main():
     return sum([cube.size() for cube in cubes])
 
 
-print(main())
+if __name__ == "__main__":
+    print(main())

@@ -6,18 +6,21 @@ from src.global_helpers import read_input
 
 
 def sum_versions(packets: List[Packet]):
-  s = 0
-  for p in packets:
-    s += p.version + sum_versions(p.sub_packets)
-  return s
+    s = 0
+    for p in packets:
+        s += p.version + sum_versions(p.sub_packets)
+    return s
+
 
 def main():
-  lines = read_input(16, 1)
-  
-  binary_packet = read_binary_packet(lines)
+    lines = read_input(16, 1)
 
-  root_packet, _ = parse_packet(binary_packet, 0)
+    binary_packet = read_binary_packet(lines)
 
-  return sum_versions([root_packet])
+    root_packet, _ = parse_packet(binary_packet, 0)
 
-print(main())
+    return sum_versions([root_packet])
+
+
+if __name__ == "__main__":
+    print(main())

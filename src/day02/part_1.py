@@ -15,4 +15,5 @@ def main():
 
   return position * depth
 
-print(main())
+if __name__ == "__main__":
+    print(main())
