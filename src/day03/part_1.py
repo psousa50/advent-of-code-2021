@@ -2,14 +2,6 @@ from src.global_helpers import read_input
 from src.day03.helpers import most_common_bit
 
 
-def most_common_bit(bytes, bit):
-    ones_count = 0
-    for byte in bytes:
-        if byte[bit] == "1":
-            ones_count += 1
-    return 1 if ones_count >= len(bytes) - ones_count else 0
-
-
 def main():
     bytes = read_input(3, 1)
 
