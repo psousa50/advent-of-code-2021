@@ -34,7 +34,7 @@ def read_char_surface(lines: List[str]):
 def execute(f):
     start_time = perf_counter()
     print()
-    print(f"Resutt: {f()}")
+    print(f"Result: {f()}")
     print()
     total_time = perf_counter() - start_time
     print(f"Total time: {total_time:.3f} seconds")

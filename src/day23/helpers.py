@@ -18,8 +18,8 @@ def read_amphipods(lines: list[str], number_of_rows):
     return amphipods
 
 
-def solve(amphipods: list[Amphipod]):
-    number_of_rows = 1 + max([a.pos.pos for a in amphipods if a.type != "H"])
+def solve(amphipods: list[Amphipod], debug: bool = False):
+    number_of_rows = 1 + max([a.pos.coord for a in amphipods if a.type != "H"])
     initial_state = State(amphipods, number_of_rows)
 
     visited: set[str] = set()
@@ -29,20 +29,27 @@ def solve(amphipods: list[Amphipod]):
     minimum_cost = -1
     while nodes and minimum_cost == -1:
         c += 1
+        # if c == 10000:
+        #     breakpoint()
         if (c % 10000) == 0:
             print(c)
         state = heapq.heappop(nodes)
-        # print(c)
-        # print(state)
+        if debug:
+            print(c)
+            print(state)
         if state.is_final():
             minimum_cost = state.cost
         else:
             if not state.id() in visited:
+                # if state.id() == "AA1AD1BB1BH10CC1CH5DD0DH1":
+                #     breakpoint()
                 visited.add(state.id())
                 for new_state in state.next_states():
-                    # print(new_state)
+                    if debug:
+                        print(new_state)
                     heapq.heappush(nodes, new_state)
 
-    print(c)
+    if debug:
+        print(c)
 
     return minimum_cost
