@@ -3,7 +3,7 @@ from src.global_helpers import execute, read_input_raw
 
 
 def main():
-    lines = read_input_raw(23, 1)
+    lines = read_input_raw(23, 1, True)
 
     amphipods = read_amphipods(lines, 2)
 

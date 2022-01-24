@@ -67,38 +67,34 @@ class Move:
     def __str__(self):
         return f"({self.amphipod.name},{self.pos})"
 
-    def path(self):
+    def __abs__(self):
+        length = 0
         p1 = self.amphipod.pos
-        p2 = self.pos            
-        step = 1 if p1.col() <= p2.col() else -1
-        hallway = [Position("H", c) for c in range(p1.col(), p2.col() + step, step)]
-        p1_room_positions = [Position(p1.place, p) for p in range(p1.coord - 1, -1, -1)]
-        p2_room_positions = [Position(p2.place, p) for p in range(0, p2.coord + 1)]
-        positions: list[Position] = []
+        p2 = self.pos
+        hallway = abs(p1.col() - p2.col()) + 1
         place1 = "H" if p1.place == "H" else "R"
         place2 = "H" if p2.place == "H" else "R"
         match f'{place1}{place2}':
             case 'HH':
-                positions += hallway[1:]
+                length += hallway
             case "HR":
-                positions += hallway[1:]
-                positions += p2_room_positions
+                length += hallway
+                length += p2.coord + 1
             case "RH":
-                positions += p1_room_positions
-                positions += hallway
+                length += p1.coord + 1
+                length += hallway
             case "RR":
                 if p1.place == p2.place:
-                    if p1.coord != p2.coord:
-                        positions.append(p2)
+                    length += abs(p1.coord - p2.coord) + 1
                 else:
-                    positions += p1_room_positions
-                    positions += hallway
-                    positions += p2_room_positions
+                    length += p1.coord + 1
+                    length += hallway
+                    length += p2.coord + 1
 
-        return positions
+        return length
 
     def cost(self):
-        return len(self.path()) * rooms[self.amphipod.type].cost
+        return (abs(self) - 1) * rooms[self.amphipod.type].cost
 
 
 @dataclass(frozen=True)
@@ -114,7 +110,7 @@ class State:
     def available_moves_to_enter_room(self, amphipod: Amphipod):
         moves: list[Move] = []
         others_in_room = [a for a in self.amphipods if a.pos.place == amphipod.type] 
-        room_pos = min([a.pos.coord for a in others_in_room]) - 1 if others_in_room else self.number_of_rows - 1
+        room_pos = min([a.pos.coord for a in others_in_room], default=self.number_of_rows) - 1
         moves += [Move(amphipod, Position(amphipod.type, r)) for r in range(0, room_pos + 1)]
         
         return moves
