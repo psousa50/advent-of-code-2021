@@ -67,7 +67,7 @@ class Move:
     def __str__(self):
         return f"({self.amphipod.name},{self.pos})"
 
-    def __abs__(self):
+    def length(self):
         length = 0
         p1 = self.amphipod.pos
         p2 = self.pos
@@ -94,7 +94,7 @@ class Move:
         return length
 
     def cost(self):
-        return (abs(self) - 1) * rooms[self.amphipod.type].cost
+        return (self.length() - 1) * rooms[self.amphipod.type].cost
 
 
 @dataclass(frozen=True)
@@ -102,6 +102,17 @@ class State:
     amphipods: list[Amphipod]
     number_of_rows: int
     cost: int = field(default=0)
+    id: str = field(default="")
+
+    def __post_init__(self):
+        state_id = "".join([a.state() for a in sorted(self.amphipods, key=lambda a: a.state())])
+        object.__setattr__(self, 'id', state_id)
+
+    def __hash__(self):
+        return self.id()
+
+    def __lt__(self, other):
+        return self.cost < other.cost if self.cost != other.cost else id(self) < id(other)
 
     @classmethod
     def new(cls, amphipods, number_of_rows, cost):
@@ -183,12 +194,6 @@ class State:
 
     def is_final(self):
         return all(a.pos.place == a.type for a in self.amphipods)
-
-    def id(self):
-        return "".join([a.state() for a in sorted(self.amphipods, key=lambda a: a.state())])
-
-    def __lt__(self, other):
-        return self.cost < other.cost if self.cost != other.cost else id(self) < id(other)
 
     def __str__(self):
         burrow = [

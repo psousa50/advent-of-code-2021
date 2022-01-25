@@ -22,32 +22,35 @@ def solve(amphipods: list[Amphipod], debug: bool = False):
     number_of_rows = 1 + max([a.pos.coord for a in amphipods if a.type != "H"])
     initial_state = State(amphipods, number_of_rows)
 
-    visited: set[str] = set()
-    nodes = [initial_state]
+    ordered_states = [initial_state]
+    states: dict[str, State] = {}
+    open_nodes: set[str] = set()
+    closed_nodes: set[str] = set()
+    open_nodes.add(initial_state.id)
 
     c = 0
     minimum_cost = -1
-    while nodes and minimum_cost == -1:
+    while ordered_states and minimum_cost == -1:
         c += 1
-        # if c == 10000:
-        #     breakpoint()
         if (c % 10000) == 0:
             print(c)
-        state = heapq.heappop(nodes)
+        state = heapq.heappop(ordered_states)
+        states[state.id] = state
+        closed_nodes.add(state.id)
         if debug:
             print(c)
             print(state)
         if state.is_final():
             minimum_cost = state.cost
         else:
-            if not state.id() in visited:
-                # if state.id() == "AA1AD1BB1BH10CC1CH5DD0DH1":
-                #     breakpoint()
-                visited.add(state.id())
-                for new_state in state.next_states():
-                    if debug:
-                        print(new_state)
-                    heapq.heappush(nodes, new_state)
+            for child_state in state.next_states():
+                if not child_state.id in closed_nodes:
+                    if not child_state.id in open_nodes or child_state.cost < states[child_state.id].cost:
+                        if debug:
+                            print(child_state)
+                        states[child_state.id] = child_state
+                        open_nodes.add(child_state.id)
+                        heapq.heappush(ordered_states, child_state)
 
     if debug:
         print(c)
