@@ -1,6 +1,4 @@
-import heapq
-
-from src.day23.models import Amphipod, Position, State, rooms
+from src.day23.models import Amphipod, Position, State, AStar, rooms
 
 
 def read_amphipods(lines: list[str], number_of_rows):
@@ -20,39 +18,9 @@ def read_amphipods(lines: list[str], number_of_rows):
 
 def solve(amphipods: list[Amphipod], debug: bool = False):
     number_of_rows = 1 + max([a.pos.coord for a in amphipods if a.type != "H"])
-    initial_state = State(amphipods, number_of_rows)
 
-    ordered_states = [initial_state]
-    states: dict[str, State] = {}
-    open_nodes: set[str] = set()
-    closed_nodes: set[str] = set()
-    open_nodes.add(initial_state.id)
+    a_star = AStar(State(amphipods, number_of_rows), debug=debug)
 
-    c = 0
-    minimum_cost = -1
-    while ordered_states and minimum_cost == -1:
-        c += 1
-        if (c % 10000) == 0:
-            print(c)
-        state = heapq.heappop(ordered_states)
-        states[state.id] = state
-        closed_nodes.add(state.id)
-        if debug:
-            print(c)
-            print(state)
-        if state.is_final():
-            minimum_cost = state.cost
-        else:
-            for child_state in state.next_states():
-                if not child_state.id in closed_nodes:
-                    if not child_state.id in open_nodes or child_state.cost < states[child_state.id].cost:
-                        if debug:
-                            print(child_state)
-                        states[child_state.id] = child_state
-                        open_nodes.add(child_state.id)
-                        heapq.heappush(ordered_states, child_state)
-
-    if debug:
-        print(c)
+    minimum_cost = a_star.solve()
 
     return minimum_cost

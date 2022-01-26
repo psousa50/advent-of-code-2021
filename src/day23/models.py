@@ -1,14 +1,11 @@
+import heapq
 from dataclasses import dataclass, field
-from pydoc import plain
-from turtle import pos
-from zoneinfo import available_timezones
 
-from click import core
 
 @dataclass()
 class Room:
     col: int
-    cost: int
+    cost_factor: int
     index: int
 
 rooms: dict[str, Room] = {
@@ -94,7 +91,7 @@ class Move:
         return length
 
     def cost(self):
-        return (self.length() - 1) * rooms[self.amphipod.type].cost
+        return (self.length() - 1) * rooms[self.amphipod.type].cost_factor
 
 
 @dataclass(frozen=True)
@@ -102,17 +99,30 @@ class State:
     amphipods: list[Amphipod]
     number_of_rows: int
     cost: int = field(default=0)
+    h_cost: int = field(default=0)
     id: str = field(default="")
 
     def __post_init__(self):
         state_id = "".join([a.state() for a in sorted(self.amphipods, key=lambda a: a.state())])
         object.__setattr__(self, 'id', state_id)
+        object.__setattr__(self, 'h_cost', self.calc_h_cost())
 
-    def __hash__(self):
-        return self.id()
+    def calc_h_cost(self):
+        cost = 0
+        for a in self.amphipods:
+            m = Move(a, Position(a.type, 0))
+            cost += m.length() * rooms[a.type].cost_factor
+            if a.pos.place != "H" and a.pos.place != a.type:
+                for a1 in self.amphipods:
+                    if a1.pos.place == a.pos.place and a1.pos.coord < a.pos.coord:
+                        cost += (a1.pos.coord + 2) * rooms[a.type].cost_factor
+
+        return cost
 
     def __lt__(self, other):
-        return self.cost < other.cost if self.cost != other.cost else id(self) < id(other)
+        c1 = self.cost + self.h_cost
+        c2 = other.cost + other.h_cost
+        return c1 < c2 if c1 != c2 else id(self) < id(other)
 
     @classmethod
     def new(cls, amphipods, number_of_rows, cost):
@@ -175,11 +185,6 @@ class State:
                     if moves_in_hallway and min([m.pos.coord for m in moves_in_hallway]) <= rooms[amphipod.type].col <= max([m.pos.coord for m in moves_in_hallway]):
                         moves += self.available_moves_to_enter_room(amphipod)
         
-        # wrong = [m for m in moves if any([a for a in self.amphipods if a.pos == m.pos])]
-        # assert not wrong
-        # if aa:
-        #     breakpoint()
-
         return moves
 
     def apply_move(self, move: Move):
@@ -199,14 +204,12 @@ class State:
         burrow = [
             "#############",
             "#...........#",
-            "###.#.#.#.###",
         ]
 
-        for _ in range(0, self.number_of_rows - 1):
+        for _ in range(0, self.number_of_rows):
             burrow.append("  #.#.#.#.#  ")
 
-        burrow.append("  #########")
-
+        burrow.append(f"  #########    {self.cost } + {self.h_cost} = {self.cost + self.h_cost}")
 
         s = [list(l) for l in burrow]
 
@@ -214,3 +217,48 @@ class State:
             s[a.pos.row() + 1][a.pos.col() + 1] = a.type
 
         return "\n".join(["".join(ss) for ss in s])
+
+
+@dataclass(frozen=True)
+class AStar:
+    initial_state: State
+    debug: bool = False
+    ordered_states: list[State] = field(init=False, default_factory=list)
+    states: dict[str, State] = field(init=False, default_factory=dict)
+    open_nodes: set[str] = field(init=False, default_factory=set)
+    closed_nodes: set[str] = field(init=False, default_factory=set)
+
+    def __post_init__(self):
+        self.add_state(self.initial_state)
+
+    def add_state(self, state: State):
+        heapq.heappush(self.ordered_states, state)
+        self.states[state.id] = state
+        self.open_nodes.add(state.id)
+
+    def solve(self):
+        c = 0
+        minimum_cost = -1
+        while self.ordered_states and minimum_cost == -1:
+            c += 1
+            if (c % 10000) == 0:
+                print(c)
+            state = heapq.heappop(self.ordered_states)
+            self.closed_nodes.add(state.id)
+            if self.debug:
+                print(c)
+                print(state)
+            if state.is_final():
+                minimum_cost = state.cost
+            else:
+                for child_state in state.next_states():
+                    if not child_state.id in self.closed_nodes:
+                        if not child_state.id in self.open_nodes or child_state.cost < self.states[child_state.id].cost:
+                            if self.debug:
+                                print(child_state)
+                            self.add_state(child_state)
+
+
+        print(c)
+
+        return minimum_cost
