@@ -1,5 +1,6 @@
 import heapq
 from dataclasses import dataclass, field
+from typing import Optional
 
 
 @dataclass()
@@ -99,23 +100,29 @@ class State:
     amphipods: list[Amphipod]
     number_of_rows: int
     cost: int = field(default=0)
+    parent: Optional['State'] = field(default=None)
     h_cost: int = field(default=0)
     id: str = field(default="")
 
     def __post_init__(self):
         state_id = "".join([a.state() for a in sorted(self.amphipods, key=lambda a: a.state())])
-        object.__setattr__(self, 'id', state_id)
         object.__setattr__(self, 'h_cost', self.calc_h_cost())
+        object.__setattr__(self, 'id', state_id)
 
     def calc_h_cost(self):
         cost = 0
-        for a in self.amphipods:
-            m = Move(a, Position(a.type, 0))
-            cost += m.length() * rooms[a.type].cost_factor
-            if a.pos.place != "H" and a.pos.place != a.type:
-                for a1 in self.amphipods:
-                    if a1.pos.place == a.pos.place and a1.pos.coord < a.pos.coord:
-                        cost += (a1.pos.coord + 2) * rooms[a.type].cost_factor
+        for a1 in self.amphipods:
+            if a1.pos.place == "H":
+                m = Move(a1, Position(a1.type, 0))
+                cost += (m.length() - 1) * rooms[a1.type].cost_factor
+                for a2 in self.amphipods:
+                    if a2.pos.place == a1.type and a2.type != a1.type:
+                        cost += (a2.pos.coord + 2) * rooms[a2.type].cost_factor
+                
+            if a1.pos.place != "H" and a1.pos.place != a1.type:
+                for a2 in self.amphipods:
+                    if a2.pos.place == a1.pos.place and a2.pos.coord < a1.pos.coord:
+                        cost += (a2.pos.coord + 2) * rooms[a2.type].cost_factor
 
         return cost
 
@@ -125,23 +132,23 @@ class State:
         return c1 < c2 if c1 != c2 else id(self) < id(other)
 
     @classmethod
-    def new(cls, amphipods, number_of_rows, cost):
-        return State(list(amphipods), number_of_rows, cost)
+    def new(cls, amphipods, number_of_rows, cost, parent):
+        return State(list(amphipods), number_of_rows, cost, parent)
 
     def available_moves_to_enter_room(self, amphipod: Amphipod):
         moves: list[Move] = []
         others_in_room = [a for a in self.amphipods if a.pos.place == amphipod.type] 
-        room_pos = min([a.pos.coord for a in others_in_room], default=self.number_of_rows) - 1
-        moves += [Move(amphipod, Position(amphipod.type, r)) for r in range(0, room_pos + 1)]
+        if all([a.type == amphipod.type for a in others_in_room]):
+            room_pos = min([a.pos.coord for a in others_in_room], default=self.number_of_rows) - 1
+            moves.append(Move(amphipod, Position(amphipod.type, room_pos)))
         
         return moves
 
     def available_moves_inside_room(self, amphipod: Amphipod):
         moves: list[Move] = []
-        top_coord = max([a.pos.coord for a in self.amphipods if a.pos.place == amphipod.type and a.pos.coord < amphipod.pos.coord], default=-1)
-        bottom_coord = min([a.pos.coord for a in self.amphipods if a.pos.place == amphipod.type and a.pos.coord > amphipod.pos.coord], default=self.number_of_rows)
-        moves += [Move(amphipod, Position(amphipod.type, r)) for r in range(top_coord + 1, amphipod.pos.coord)]
-        moves += [Move(amphipod, Position(amphipod.type, r)) for r in range(amphipod.pos.coord + 1, bottom_coord)]
+        bottom_coord = min([a.pos.coord for a in self.amphipods if a.pos.place == amphipod.type and a.pos.coord > amphipod.pos.coord], default=self.number_of_rows) - 1
+        if bottom_coord> amphipod.pos.coord:
+            moves.append (Move(amphipod, Position(amphipod.type, bottom_coord)))
         
         return moves
 
@@ -176,14 +183,22 @@ class State:
             if amphipod.at_correct_room():
                 if amphipod.pos.coord < self.number_of_rows - 1:
                     moves += self.available_moves_inside_room(amphipod)
-                    if self.is_blocking_other(amphipod):
+                    if self.is_blocking_other(amphipod) and not self.blocked_in_room(amphipod):
                         moves += self.available_moves_in_hallway(amphipod)
             else:
                 if not self.blocked_in_room(amphipod):
-                    moves_in_hallway = self.available_moves_in_hallway(amphipod)
-                    moves += moves_in_hallway
-                    if moves_in_hallway and min([m.pos.coord for m in moves_in_hallway]) <= rooms[amphipod.type].col <= max([m.pos.coord for m in moves_in_hallway]):
-                        moves += self.available_moves_to_enter_room(amphipod)
+                    moves_in_room: list[Move] = []
+                    p1 = amphipod.pos.col()
+                    p2 = rooms[amphipod.type].col
+                    if p1 > p2: p1, p2 = (p2, p1)
+                    blocking = [a for a in self.amphipods if a.pos.place == "H" and p1 <= a.pos.coord <= p2]
+                    if not blocking:
+                        moves_in_room += self.available_moves_to_enter_room(amphipod)
+
+                    if moves_in_room:
+                        moves = moves_in_room
+                    else:
+                        moves += self.available_moves_in_hallway(amphipod)
         
         return moves
 
@@ -192,7 +207,7 @@ class State:
             Amphipod(move.amphipod.name, move.amphipod.type, move.pos) if a == move.amphipod else a
             for a in self.amphipods
         ]
-        return State.new(new_amphipods, self.number_of_rows, self.cost + move.cost())
+        return State.new(new_amphipods, self.number_of_rows, self.cost + move.cost(), self)
 
     def next_states(self):
         return [self.apply_move(move) for amphipod in self.amphipods for move in self.available_moves(amphipod) ]
@@ -209,7 +224,7 @@ class State:
         for _ in range(0, self.number_of_rows):
             burrow.append("  #.#.#.#.#  ")
 
-        burrow.append(f"  #########    {self.cost } + {self.h_cost} = {self.cost + self.h_cost}")
+        burrow.append(f"  #########    {self.cost } + {self.h_cost} = {self.cost + self.h_cost}  {self.id}")
 
         s = [list(l) for l in burrow]
 
@@ -236,6 +251,13 @@ class AStar:
         self.states[state.id] = state
         self.open_nodes.add(state.id)
 
+    def build_path(self, s: State):
+        if s.parent is None:
+            return [s]
+        else:
+            return self.build_path(s.parent) + [s]
+        
+
     def solve(self):
         c = 0
         minimum_cost = -1
@@ -259,6 +281,9 @@ class AStar:
                             self.add_state(child_state)
 
 
-        print(c)
+        path = self.build_path(state)
+        for p in path:
+            print(p)
+        print(f"Path len: {len(path)}")
 
         return minimum_cost
