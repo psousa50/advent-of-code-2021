@@ -1,6 +1,3 @@
-import pytest
-import src.day23.part_1
-import src.day23.part_2
 from src.day23.models import Amphipod, Move, Position, State
 
 

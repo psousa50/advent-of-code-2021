@@ -7,13 +7,12 @@ from typing import Optional
 class Room:
     col: int
     cost_factor: int
-    index: int
 
 rooms: dict[str, Room] = {
-    "A": Room(2, 1, 1),
-    "B": Room(4, 10, 1),
-    "C": Room(6, 100, 1),
-    "D": Room(8, 1000, 1),
+    "A": Room(2, 1),
+    "B": Room(4, 10),
+    "C": Room(6, 100),
+    "D": Room(8, 1000),
 }
 
 
@@ -198,7 +197,7 @@ class State:
                     if moves_in_room:
                         moves = moves_in_room
                     else:
-                        moves += self.available_moves_in_hallway(amphipod)
+                        moves = self.available_moves_in_hallway(amphipod)
         
         return moves
 
@@ -224,7 +223,7 @@ class State:
         for _ in range(0, self.number_of_rows):
             burrow.append("  #.#.#.#.#  ")
 
-        burrow.append(f"  #########    {self.cost } + {self.h_cost} = {self.cost + self.h_cost}  {self.id}")
+        burrow.append(f"  #########    {self.cost } + {self.h_cost} = {self.cost + self.h_cost}")
 
         s = [list(l) for l in burrow]
 
@@ -260,8 +259,8 @@ class AStar:
 
     def solve(self):
         c = 0
-        minimum_cost = -1
-        while self.ordered_states and minimum_cost == -1:
+        success_state: Optional[State] = None
+        while self.ordered_states and success_state is None:
             c += 1
             if (c % 10000) == 0:
                 print(c)
@@ -271,19 +270,13 @@ class AStar:
                 print(c)
                 print(state)
             if state.is_final():
-                minimum_cost = state.cost
+                success_state = state
             else:
                 for child_state in state.next_states():
-                    if not child_state.id in self.closed_nodes:
-                        if not child_state.id in self.open_nodes or child_state.cost < self.states[child_state.id].cost:
+                    if not child_state.id in self.closed_nodes and (not child_state.id in self.open_nodes or child_state.cost < self.states[child_state.id].cost):
                             if self.debug:
                                 print(child_state)
                             self.add_state(child_state)
 
 
-        path = self.build_path(state)
-        for p in path:
-            print(p)
-        print(f"Path len: {len(path)}")
-
-        return minimum_cost
+        return self.build_path(success_state) if success_state is not None else []
