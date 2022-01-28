@@ -1,4 +1,4 @@
-from src.global_helpers import read_input
+from src.global_helpers import execute, read_input
 
 
 def main():
@@ -8,4 +8,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print(main())
+    execute(main)
