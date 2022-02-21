@@ -1,87 +1,67 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from src.global_helpers import execute, read_input
-from src.global_models import Point
 
 
-@dataclass(frozen=True)
-class Cocumber:
-    type: str
-    pos: Point
-
-    def __repr__(self):
-        return "{} {}".format(self.type, repr(self.pos))
-
-
-@dataclass(frozen=True)
+@dataclass()
 class Sea:
-    cocumbers: list[Cocumber]
-    width: int
-    height: int
+    cucumbers: list[list[str]]
+    width: int = field(default=0)
+    height: int = field(default=0)
 
-    @classmethod
-    def from_new_cocumbers(cls, sea: "Sea", cocumbers: list[Cocumber]):
-        return cls(cocumbers, sea.width, sea.height)
+    def __post_init__(self):
+        self.width = len(self.cucumbers[0])
+        self.height = len(self.cucumbers)
 
     def __repr__(self):
         s = ""
         for y in range(self.height):
             for x in range(self.width):
-                c = self.cocumber_at(Point(x, y))
-                s += c.type if c is not None else "."
+                s += self.cucumbers[y][x]
             s += "\n"
         return s
 
-    def cocumber_at(self, pos: Point):
-        cocumbers = [c for c in self.cocumbers if c.pos == pos]
-        return next(iter(cocumbers), None)
-
-    def is_empty(self, pos: Point):
-        return self.cocumber_at(pos) is None
-
-    def move_type(self, type: str, d: Point):
-        moved_cocumbers: list[Cocumber] = []
-        moved = False
-        for c in self.cocumbers:
-            new_x = (c.pos.x + d.x) % self.width
-            new_y = (c.pos.y + d.y) % self.height
-            new_pos = Point(new_x, new_y)
-            if c.type == type and self.is_empty(new_pos):
-                moved_cocumbers += [Cocumber(c.type, new_pos)]
-                moved = True
-            else:
-                moved_cocumbers += [c]
-
-        return moved, Sea.from_new_cocumbers(self, moved_cocumbers) if moved else self
-
     def move(self):
-        moved_east, new_sea = self.move_type(">", Point(1, 0))
-        moved_south, new_sea = new_sea.move_type("v", Point(0, 1))
-        return moved_east or moved_south, new_sea
+        moved = False
+        for y in range(self.height):
+            to_move = []
+            for x in range(self.width):
+                if self.cucumbers[y][x] == ">" and self.cucumbers[y][(x + 1) % self.width] == ".":
+                    to_move += [x]
+            for x in to_move:
+                self.cucumbers[y][x] = "."
+                self.cucumbers[y][(x + 1) % self.width] = ">"
+            moved = moved or len(to_move) > 0
+
+        for x in range(self.width):
+            to_move = []
+            for y in range(self.height):
+                if self.cucumbers[y][x] == "v" and self.cucumbers[(y + 1) % self.height][x] == ".":
+                    to_move += [y]
+            for y in to_move:
+                self.cucumbers[y][x] = "."
+                self.cucumbers[(y + 1) % self.height][x] = "v"
+            moved = moved or len(to_move) > 0
+
+        return moved
 
 
 def main():
     lines = read_input(25, 1)
 
-    cocumbers: list[Cocumber] = []
-    for y, line in enumerate(lines):
-        for x, d in enumerate(line):
-            if d in [">", "v"]:
-                cocumbers += [Cocumber(d, Point(x, y))]
+    sea = Sea([[c for c in line] for line in lines])
 
-    sea = Sea(cocumbers, len(lines[0]), len(lines))
-    # print(sea)
-
-    moved = True
+    done = False
     c = 0
-    while moved:
-        moved, sea = sea.move()
+    while not done:
+        moved = sea.move()
         c += 1
         # if (c % 10) == 0:
-        print(c)
+        # print(c)
         # print(sea)
-        # if c == 1:
+        # if c == 10:
         #     break
+        done = not moved
 
     return c
 
